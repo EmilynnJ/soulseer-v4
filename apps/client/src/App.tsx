@@ -3,15 +3,15 @@ import { useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import { useAuthStore } from './store/useAuthStore';
 import Navbar from './components/Navbar';
-import HomePage from './pages/HomePage';
-import BrowseReadersPage from './pages/BrowseReadersPage';
-import ReaderProfilePage from './pages/ReaderProfilePage';
-import AboutPage from './pages/AboutPage';
-import CommunityPage from './pages/CommunityPage';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import ReadingSessionPage from './pages/ReadingSessionPage';
-import HelpPage from './pages/HelpPage';
+import HomePage from './pages/Home';
+import Browse from './pages/Browse';
+import ReaderProfile from './pages/ReaderProfile';
+import About from './pages/About';
+import Community from './pages/Community';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import ReadingSession from './pages/ReadingSession';
+import Help from './pages/Help';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const user = useAuthStore((s) => s.user);
@@ -21,38 +21,48 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 
 export default function App() {
   const setUser = useAuthStore((s) => s.setUser);
-  const setProfile = useAuthStore((s) => s.setProfile);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user) {
-        fetch('/api/auth/me', {
-          headers: { Authorization: `Bearer ${session.access_token}` }
-        }).then(r => r.json()).then(profile => setProfile(profile)).catch(() => {});
-      } else {
-        setProfile(null);
-      }
     });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
     return () => subscription.unsubscribe();
-  }, []);
+  }, [setUser]);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen" style={{ background: '#0A0A0F' }}>
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/browse" element={<BrowseReadersPage />} />
-        <Route path="/reader/:id" element={<ReaderProfilePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/community" element={<CommunityPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/help" element={<HelpPage />} />
-        <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
-        <Route path="/session/:id" element={<RequireAuth><ReadingSessionPage /></RequireAuth>} />
+        <Route path="/readers" element={<Browse />} />
+        <Route path="/readers/:id" element={<ReaderProfile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/help" element={<Help />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RequireAuth>
+              <Dashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reading/:id"
+          element={
+            <RequireAuth>
+              <ReadingSession />
+            </RequireAuth>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
