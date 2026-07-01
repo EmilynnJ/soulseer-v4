@@ -90,6 +90,30 @@ export default function App() {
                                                         </RequireAuth>
                                         }
                           />
+                <Route
+                            path="/client"
+                            element={
+                                          <RequireAuth>
+                                                          <ClientDashboard />
+                                                        </RequireAuth>
+                                        }
+                          />
+                <Route
+                            path="/reader"
+                            element={
+                                          <RequireAuth>
+                                                          <ReaderDashboard />
+                                                        </RequireAuth>
+                                        }
+                          />
+                <Route
+                            path="/admin"
+                            element={
+                                          <RequireAuth>
+                                                          <AdminDashboard />
+                                                        </RequireAuth>
+                                        }
+                          />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
