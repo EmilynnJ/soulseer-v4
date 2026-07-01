@@ -12,6 +12,9 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ReadingSession from './pages/ReadingSession';
 import Help from './pages/Help';
+import ClientDashboard from './pages/ClientDashboard';
+import ReaderDashboard from './pages/ReaderDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const user = useAuthStore((s) => s.user);
@@ -63,6 +66,30 @@ export default function App() {
             </RequireAuth>
           }
         />
+                <Route
+                            path="/client"
+                            element={
+                                          <RequireAuth>
+                                                          <ClientDashboard />
+                                                        </RequireAuth>
+                                        }
+                          />
+                <Route
+                            path="/reader"
+                            element={
+                                          <RequireAuth>
+                                                          <ReaderDashboard />
+                                                        </RequireAuth>
+                                        }
+                          />
+                <Route
+                            path="/admin"
+                            element={
+                                          <RequireAuth>
+                                                          <AdminDashboard />
+                                                        </RequireAuth>
+                                        }
+                          />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
